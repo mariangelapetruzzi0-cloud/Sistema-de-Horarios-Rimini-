@@ -1,13 +1,12 @@
 require('dotenv').config();
 const { Pool } = require('pg');
 
-// Criando a conexão com o banco
+// Criando a conexão com o banco (Render/Postgres)
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  connectionString: process.env.DATABASE_URL, // pega a URL completa do Render
+  ssl: {
+    rejectUnauthorized: false, // necessário para o SSL do Render
+  },
 });
 
 // Testando a conexão
