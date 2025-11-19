@@ -13,15 +13,30 @@ function getWeekLabel(weekOffset = 0) {
   return `Semana de ${format(monday)} - ${format(sunday)}`;
 }
 
+// 🔥 Normalizador + ordem dos dias
+const normalizaDia = (dia) => {
+  if (!dia) return '';
+  return dia
+    .replace('feira', '-feira')
+    .replace('Feira', '-Feira')
+    .replace('--', '-')
+    .trim()
+    .toLowerCase();
+};
+
 const diasOrdem = [
-  'Segunda-feira',
-  'Terça-feira',
-  'Quarta-feira',
-  'Quinta-feira',
-  'Sexta-feira',
-  'Sábado',
-  'Domingo',
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+  'domingo',
 ];
+
+const ordenarPorDia = (a, b) =>
+  diasOrdem.indexOf(normalizaDia(a.dia_trabalho)) -
+  diasOrdem.indexOf(normalizaDia(b.dia_trabalho));
 
 export default function HorariosPage() {
   const router = useRouter();
@@ -63,9 +78,10 @@ export default function HorariosPage() {
 
   const handleSelectWeek = (e) => setSelectedWeek(e.target.value);
 
+  // 🔥 Agora ordena corretamente por dia
   const filteredHorarios = horarios
     .filter((h) => h.semana === selectedWeek)
-    .sort((a, b) => diasOrdem.indexOf(a.dia_trabalho) - diasOrdem.indexOf(b.dia_trabalho));
+    .sort(ordenarPorDia);
 
   const meuHorario = filteredHorarios.filter((h) => h.utilizador_nome === userName);
 
@@ -173,8 +189,8 @@ export default function HorariosPage() {
         />
       </div>
 
-      {/* Conteúdo principal */}
       <div className="mt-6 p-6">
+
         {/* Select da Semana */}
         <div className="mb-4">
           <label className="block mb-2 font-medium text-gray-800">Selecionar Semana</label>
@@ -222,7 +238,7 @@ export default function HorariosPage() {
             {[...new Set(filteredHorarios.map((h) => h.loja))].map((loja) => {
               const horariosLoja = filteredHorarios
                 .filter((h) => h.loja === loja)
-                .sort((a, b) => diasOrdem.indexOf(a.dia_trabalho) - diasOrdem.indexOf(b.dia_trabalho));
+                .sort(ordenarPorDia); // 🔥 ordena aqui também!
 
               const usuarios = [...new Set(horariosLoja.map((h) => h.utilizador_nome))];
               const totalHorasUsuarios = usuarios.map((nome) => {
